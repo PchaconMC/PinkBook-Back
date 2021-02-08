@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Service\UserService;
@@ -47,20 +45,7 @@ class RegisterController extends Controller
     public function unauthorized(){
         return response()->json(['error'=>'Unauthorized'],401);
     }
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
+
 
     /**
      * Create a new user instance after a valid registration.
@@ -72,6 +57,21 @@ class RegisterController extends Controller
     {
         if (request()->ajax()) {
             if (request()->isMethod("POST")) {
+
+                $validator = Validator::make($request->all(), [
+                    'role' => ['required', 'string', 'max:255'],
+                    'name' => ['required', 'string', 'max:255'],
+                    'email' => ['required', 'string', 'email', 'max:255','unique:users'],
+                    'password' => ['required', 'string'],
+                ]);
+        
+                if ($validator->fails()) {
+                    return [
+                        'created' => false,
+                        'errors'  => $validator->errors()->all()
+                    ];
+                }
+
                 return $this->userService->create($request);
             }
         }

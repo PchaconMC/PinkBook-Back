@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
-
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -17,7 +17,22 @@ class AuthController extends Controller
     public function unauthorized(){
         return response()->json(['error'=>'Unauthorized'],401);
     }
-    public function login(){
+
+    public function login(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return [
+                'created' => false,
+                'errors'  => $validator->errors()->all()
+            ];
+        }
+
+
         $credentials = request(['email','password']);
         if(! $token = auth($this->guard)->attempt($credentials)){
             return response()->json(['error'=>'Unauthorized'],401);

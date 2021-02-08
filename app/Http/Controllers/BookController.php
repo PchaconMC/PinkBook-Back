@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Service\BookService;
+use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
@@ -50,6 +51,22 @@ class BookController extends Controller
     {
         if (request()->ajax()) {
             if (request()->isMethod("POST")) {
+
+                $validator = Validator::make($request->all(), [
+                    'title' => ['required', 'string', 'max:255'],
+                    'isbn' => ['required', 'string', 'max:255'],
+                    'author' => ['required', 'string', 'max:255'],
+                    'summary' => ['required', 'string', 'max:255'],
+                    'price' => ['required', 'numeric'],
+                    'category_id' => ['required', 'numeric'],
+                ]);
+        
+                if ($validator->fails()) {
+                    return [
+                        'created' => false,
+                        'errors'  => $validator->errors()->all()
+                    ];
+                }
                 return $this->bookService->create($request);
             }
         }
@@ -59,6 +76,25 @@ class BookController extends Controller
     {
         if (request()->ajax()) {
             if (request()->isMethod("POST")) {
+
+                $validator = Validator::make($request->all(), [
+                    'title' => ['required', 'string', 'max:255'],
+                    'isbn' => ['required', 'string', 'max:255'],
+                    'author' => ['required', 'string', 'max:255'],
+                    'summary' => ['required', 'string', 'max:255'],
+                    'price' => ['required', 'numeric'],
+                    'category_id' => ['required', 'numeric'],
+                    'id' => ['required', 'numeric'],
+                ]);
+                    
+                if ($validator->fails()) {
+                    return [
+                        'created' => false,
+                        'errors'  => $validator->errors()->all()
+                    ];
+                }
+
+
                 return $this->bookService->update($request);
             }
         }

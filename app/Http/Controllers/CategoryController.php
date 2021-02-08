@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Service\CategoryService;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -48,6 +49,19 @@ class CategoryController extends Controller
     {
         if (request()->ajax()) {
             if (request()->isMethod("POST")) {
+
+                $validator = Validator::make($request->all(), [
+                    'name' => ['required', 'string', 'max:255'],
+                    'description' => ['required', 'string'],
+                ]);
+        
+                if ($validator->fails()) {
+                    return [
+                        'created' => false,
+                        'errors'  => $validator->errors()->all()
+                    ];
+                }
+
                 return $this->categoryService->create($request);
             }
         }
@@ -57,6 +71,20 @@ class CategoryController extends Controller
     {
         if (request()->ajax()) {
             if (request()->isMethod("POST")) {
+
+                $validator = Validator::make($request->all(), [
+                    'name' => ['required', 'string', 'max:255'],
+                    'description' => ['required', 'string'],
+                    'id' => ['required', 'numeric'],
+                ]);
+        
+                if ($validator->fails()) {
+                    return [
+                        'created' => false,
+                        'errors'  => $validator->errors()->all()
+                    ];
+                }
+
                 return $this->categoryService->update($request);
             }
         }

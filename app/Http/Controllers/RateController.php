@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Rate;
-use App\Models\Book;
-use App\Http\Resources\Rate as RateRes;
 use App\Service\RateService;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class RateController extends Controller
 {
@@ -52,6 +49,20 @@ class RateController extends Controller
     {
         if (request()->ajax()) {
             if (request()->isMethod("POST")) {
+
+                $validator = Validator::make($request->all(), [
+                    'description' => ['required', 'string', 'max:255'],
+                    'rate' => ['required', 'numeric'],
+                    'book_id' => ['required', 'numeric'],
+                ]);
+        
+                if ($validator->fails()) {
+                    return [
+                        'created' => false,
+                        'errors'  => $validator->errors()->all()
+                    ];
+                }
+
                 return $this->rateService->create($request);
             }
         }
@@ -61,6 +72,20 @@ class RateController extends Controller
     {
         if (request()->ajax()) {
             if (request()->isMethod("PUT")) {
+
+                $validator = Validator::make($request->all(), [
+                    'description' => ['required', 'string', 'max:255'],
+                    'rate' => ['required', 'numeric'],
+                    'id' => ['required', 'numeric'],
+                ]);
+        
+                if ($validator->fails()) {
+                    return [
+                        'created' => false,
+                        'errors'  => $validator->errors()->all()
+                    ];
+                }
+
                 return $this->rateService->update($request,$id);
             }
         }
