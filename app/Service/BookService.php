@@ -18,6 +18,12 @@ class BookService
 
         try {
             $book = Book::findOrFail($id);
+
+            $book = Book::where('id', $id)
+            ->withCount("rates")
+            ->get()
+            ->first();
+
             return new BookRes($book);
         } catch (\Exception $exception) {
             return response()->json(["message" => __(":app: Libro no encontrado!!", ["app" => env('APP_NAME')])]);
